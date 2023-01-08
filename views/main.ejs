@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> </title>
+    <page id="page"><%= page %> </page>
+    
+    <link rel="stylesheet" href="/css/main.css">
+    <!-- <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> -->
+</head>
+<body >
+    <%- include('nav') %>
+    
+    <div class="title_div">
+        
+        <!-- <div style="background-color: rgb(61, 61, 61);color: antiquewhite;" class="btShowMenu" onclick="getTable()">Refresh</div> -->
+        <div class="logo">
+            <img class="logo_image" src="/img/logo.png" alt=""> 
+        </div>
+       
+        <h1 style=" width: auto;  color: antiquewhite; display: flex; justify-content: center; margin-top: auto; margin-bottom: auto; text-align: center;" id="title"><%= title %></h1>
+        <div class="logo_div">
+            <div class="logokcl">       
+                <img class="logo_image" src="/img/amazing.png" alt="">                                        
+            </div>
+            <div class="logokcl2">
+                <img class="logo_image" src="/img/charge.png" alt=""> 
+            </div>
+        </div>
+        
+        <div class="logokanan">
+            <img class="logo_image" src="/img/accelerate.png" alt=""> 
+        </div>
+    </div>
+    
+
+    <div  class="container" onclick="hidemenu()">
+        
+        
+        
+        
+        <div >
+            <!-- <div id="container" >
+                <button style="height: 40px; display: inline-block;" class="btShowMenu" onclick="getTable()">Refresh</button> 
+                <input style="visibility:hidden ;" type="date" id="dtfrom" value="2021-11-01" >
+                <label style="visibility:hidden ;" for="">Until</label>
+                <input style="visibility:hidden ;" type="date" id="dtuntil" value="2021-11-01" >
+                               
+            </div> -->
+            <div class="table_div">
+                <div id="table"></div>   
+                <!-- <div id="table2"></div>   -->
+            </div>
+            
+        </div>
+        
+    </div>
+</body>
+</html>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+var title="coba";
+
+
+
+
+
+function showmenu(){
+    var button=document.getElementById('navID')
+    button.className="nav_bar"
+}
+function hidemenu(){
+    var button=document.getElementById('navID')
+    button.className="nav_bar_hidden"
+}
+function setTitle(judul){
+    var title=document.getElementById('title')
+    var container=document.getElementById('container')
+    var table=document.getElementById('table')
+    title.innerHTML=judul
+    container.style.visibility="visible"
+    table.style.visibility="hidden"
+    hidemenu()
+}
+var socket = io();
+
+socket.on('refresh', function(result) {
+    var title=document.getElementById('title')
+    var page=document.getElementById('page')
+    //  alert(page.innerHTML);
+    var pageqty=15;
+    var batas1=0;
+    var batas2=pageqty;
+    // var batas3=pageqty*2;
+    if (page.innerHTML==2){
+        batas1=pageqty;
+        batas2=pageqty*2;
+        // batas3=pageqty*4;
+    }
+    const dat=(result);
+     
+    if ((title.innerHTML=="DATA STOCK 1012" && dat.tipe=="Stok")||(title.innerHTML=="DATA SCAN 1012" && dat.tipe=="Scan")){
+        
+        var div=document.getElementById('table')
+        var div2=document.getElementById('table2')
+        var fieldCol=""
+        var fieldVal=""
+        var fieldVal2=""
+        var isi=""
+        var cnt=0
+        fieldCol=fieldCol+"<th>No</th>"
+        dat.col.forEach(element => {
+            fieldCol=fieldCol+"<th>"+element.name+"</th>"
+        });
+        dat.val.forEach(myval => {
+            cnt=cnt+1
+            var name=""
+            // if (myval["Qty"]> myval["Target"]){
+            //    name=" class='tdcolor' "
+            // }
+            // if (myval["Act"]> myval["Max"]){
+            //    name=" class='tdyellow' "
+            // }
+            // if (myval["Act"]< myval["Min"]){
+            //    name=" class='tdred' "
+            // }
+            if (cnt>batas1 && cnt<=batas2){
+                
+                fieldVal=fieldVal+"<tr  "+name+" >";
+                fieldVal=fieldVal+"<td onclick='clickme("+JSON.stringify(myval)+")'>"+cnt+"</td>"
+                dat.col.forEach(mycol => {
+                    
+                    fieldVal=fieldVal+"<td onclick='clickme("+JSON.stringify(myval)+")'>"+myval[mycol.name]+"</td>"
+                });
+                fieldVal=fieldVal+"</tr>";
+            }
+            // if (cnt>batas2 && cnt<=batas3){
+            //     fieldVal2=fieldVal2+"<tr  "+name+" >";
+            //     fieldVal2=fieldVal2+"<td onclick='clickme("+JSON.stringify(myval)+")'>"+cnt+"</td>"
+            //     dat.col.forEach(mycol => {
+            //         fieldVal2=fieldVal2+"<td onclick='clickme("+JSON.stringify(myval)+")'>"+myval[mycol.name]+"</td>"
+            //     });
+            //     fieldVal2=fieldVal2+"</tr>";
+            // }
+            
+        });
+        div.style.visibility="visible";
+        div.innerHTML="<table><thead>"+fieldCol+"</thead><tbody>"+fieldVal+"</tbody></table>"
+        div2.style.visibility="visible";
+        div2.innerHTML="<table><thead>"+fieldCol+"</thead><tbody>"+fieldVal2+"</tbody></table>"
+    } 
+    
+});
+</script>
