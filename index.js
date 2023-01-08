@@ -177,7 +177,7 @@ app.post('/getdetail2',(req,res)=>{
   getData("select DataDateAndTime,Barcode,convert(decimal(10,2),Weight,0)Weight,convert(decimal(10,2),MinWeight,0)MinWeight from DataWeigherID_WithShift where tanggal='"+filter.Tanggal+"' and StatusSorting='"+filter.StatusSorting+"' and shift='"+filter.Shift+"' order by DataDateAndTime",res)
 })
 
-let port = process.env.PORT;
+let port = process.env.PORT || 3001;
 server.listen(port, function () {
   console.log('Listening on port ' + port);
 });
