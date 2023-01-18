@@ -102,18 +102,25 @@ async function getData(query, res) {
     const result = await runQueryAsync(query);
     res.send(result);
   } catch (error) {
-    console.log(error);
-    res.send(error);
+    res.send({ err: error.toString() });
   }
 }
 async function getDataInsert(query, select, res) {
   try {
-    await runQueryAsync(query);
+    var err;
+    try {
+      await runQueryAsync(query);
+    } catch (error) {
+      err = error.sqlMessage;
+    }
+
     const result = await runQueryAsync(select);
+    result.error = err;
+    console.log(result);
     res.send(result);
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.send({ err: error.toString() });
   }
 }
 
@@ -188,7 +195,7 @@ app.post("/getdetail2", (req, res) => {
   );
 });
 
-let port = process.env.PORT || 3001;
+var port = process.env.PORT || 3001;
 server.listen(port, function () {
   console.log("Listening on port " + port);
 });
